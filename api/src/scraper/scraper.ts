@@ -1,3 +1,7 @@
+import * as fs from 'fs';
+import path from 'path';
+import sax from 'sax';
+
 // https://www.fueleconomy.gov/feg/ws/index.shtml
 interface RawVehicleData {
     id: number,
@@ -128,4 +132,60 @@ interface YourMpgDriverVehicle {
     mpg: number,
     state: string,
     vehicleId: number
+}
+
+export function parseScrapedData() {
+    const filePath = path.resolve(__dirname, '../../data/vehicles.xml');
+    const stream = fs.createReadStream(filePath, { encoding: 'utf-8' });
+    const streamParser = sax.createStream(true);
+    
+    let currentTag: string = null;
+    let currentVehicle: Partial<RawVehicleData> = null;
+    const vehicleData = [];
+    let tagStack = [];
+
+    streamParser.on('opentag', (node) => {
+        if (node.name !== 'vehicles' && node.name !== 'vehicle') {
+            tagStack.push(node.name);
+        }
+        if (node.name === 'vehicle') {
+            currentVehicle = {};
+        } else if (currentVehicle) {
+            currentTag = tagStack.join('.');
+        }
+    });
+
+    streamParser.on('text', (text) => {
+        if (currentTag && currentVehicle) {
+            const keys = currentTag.split('.');
+            let target = currentVehicle;
+            for (let i = 0; i < keys.length - 1; i++) {
+                const key = keys[i];
+                target[key] = target[key] || {};
+                target = target[key];
+            }
+
+            target[keys[keys.length - 1]] = text.trim();
+        }
+    });
+
+    streamParser.on('closetag', (tagName) => {
+        if (tagName !== 'vehicles' && tagName !== 'vehicle') {
+            tagStack.pop();
+        }
+        if (tagName === 'vehicle' && currentVehicle) {
+            vehicleData.push(currentVehicle as RawVehicleData);
+            currentVehicle = null;
+        }
+
+        if (currentTag && currentTag.endsWith(tagName)) {
+            currentTag = null;
+        }
+    });
+
+    streamParser.on('end', () => {
+        console.log("Finished with data");
+    });
+
+    stream.pipe(streamParser);
 }

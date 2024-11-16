@@ -1,1 +1,3 @@
-console.log("Hello world")
+import { parseScrapedData } from "./scraper/scraper.js";
+
+parseScrapedData();
