@@ -1,4 +1,4 @@
-import { Box, Card, Center, Container, Flex, Select, Text } from "@mantine/core";
+import { Center, Container, Flex, Select, Text } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { ScatterChart, ScatterChartSeries } from "@mantine/charts";
 import { Button } from "@mantine/core";
@@ -45,8 +45,9 @@ const AggregatePage: React.FC = () => {
         const fetchModelData = async () => {
             const res = await fetch(`http://localhost:3000/dropdowns/model?make=${makeValue}`);
             const data = await res.json()
-            data.sort()
-            setModelData(data)
+            const models = data.map((obj: any, index: number) => {return obj.model;})
+            models.sort()
+            setModelData(models)
         }
         fetchModelData()
     }, [makeValue])
@@ -203,8 +204,9 @@ const AggregatePage: React.FC = () => {
                                 data={graphData}
                                 dataKey={{ x: xAxisValue, y: yAxisValue }}
                                 xAxisProps={{ domain: [getLowest(graphData[0].data, xAxisValue), getGreatest(graphData[0].data, xAxisValue)] }}
-                                xAxisLabel={xAxisValue}
-                                yAxisLabel={yAxisValue}
+                                yAxisProps={{ domain: [getLowest(graphData[0].data, yAxisValue), getGreatest(graphData[0].data, yAxisValue)] }}
+                                xAxisLabel={(xAxisValue.substring(0,1).toUpperCase() + xAxisValue.substring(1)).replaceAll("_", " ")}
+                                yAxisLabel={(yAxisValue.substring(0,1).toUpperCase() + yAxisValue.substring(1)).replaceAll("_", " ")}
                         />
                     </Flex>
                     <Flex direction="column" gap="md">
