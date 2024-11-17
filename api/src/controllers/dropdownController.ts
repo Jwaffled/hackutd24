@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/library";
 import prisma from "../prisma.js";
 
 const dropdownController = {
@@ -9,24 +10,29 @@ const dropdownController = {
         }
 
         const year = parseInt(request.query.year)
-        let res : {model: string, vehicle_id: number}[];
+        let res : {model: string, engine_displacement: Decimal, cylinders: number, vehicle_id: number}[];
 
         if(!isNaN(year)) {
             res = await prisma.vehicle.findMany({
                 select: {
                     model: true,
-                    vehicle_id: true
+                    vehicle_id: true,
+                    engine_displacement: true,
+                    cylinders: true,
                 },
                 where: {
                     make: make,
                     year: year
-                }
+                },
+                distinct: ['model']
             })
         } else {
             res = await prisma.vehicle.findMany({
                 select: {
                     model: true,
-                    vehicle_id: true
+                    vehicle_id: true,
+                    engine_displacement: true,
+                    cylinders: true,
                 },
                 where: {
                     make: make
@@ -34,7 +40,7 @@ const dropdownController = {
                 distinct: ['model']
             })
         }
-        const models = res.map((obj: {model: string}) => obj.model);
+        const models = res.map((obj) => { return {model: obj.model, display: `${obj.model} ${ !obj.engine_displacement ? "" : `(${obj.cylinders} cyl ${obj.engine_displacement.toFixed(1)} L)`}`}});
         reply.code(200).send(models)
         return
     }, 
