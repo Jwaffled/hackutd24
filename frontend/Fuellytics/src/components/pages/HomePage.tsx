@@ -1,9 +1,13 @@
 import React from 'react';
 import Card from '../ui/Card';
+import Header from '../ui/Header';
 
 const HomePage = () => {
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
+      <Header onMenuClick={function (): void {
+                location.href = '/'
+            } }/>
       {/* Main Content */}
       <main
         className="absolute top-0 left-0 w-screen h-screen bg-cover bg-center relative"
@@ -58,22 +62,19 @@ const HomePage = () => {
                     Aggregates
                   </button>
                 </a>
-                <a href="/aboutus">
-                  <button className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
-                    About Us
-                  </button>
-                </a>
                 <a href="/models">
                   <button className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
                     Models
                   </button>
                 </a>
-                <a href="/comparisons">
+                
+              </div>
+              <br />
+              <a href="/comparisons">
                   <button className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
                     Comparisons
                   </button>
                 </a>
-              </div>
             </div>
           </Card>
 

@@ -3,6 +3,7 @@ import { ScatterChart } from '@mantine/charts';
 import { Paper, Container, Select, Space, Text, Button, Card, Grid } from '@mantine/core';
 import { fetchEntries, fetchEntriesByYear, fetchMakes, fetchModels, fetchYears, IEntriesResponse } from '../../utils';
 import { LineChart, ResponsiveContainer } from 'recharts';
+import Header from '../ui/Header';
 
 // Data for the scatter plot
 interface GraphData {
@@ -108,9 +109,14 @@ function ModelPage() {
   );
 
   return (
-    <Container w="100%" py="xl">
+    <>
+    <Header onMenuClick={function (): void {
+      location.href = '/'
+  } }/>
+    <Container w="100%" py="xl" style={{paddingUp: "10px"}}>
+      
       <Card p="lg">
-        <Text size="xl" fw={700} mb="lg">Vehicle MPG Analysis</Text>
+        <Text size="xl" fw={700} mb="lg"><br/>Vehicle MPG Analysis</Text>
         <Grid mb="xl">
           <Grid.Col span={{ base: 12, md: 3}}>
             <Select
@@ -140,6 +146,7 @@ function ModelPage() {
             />
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 3}}>
+            <br />
             <Button onClick={generateGraph}>
               Generate Graph
             </Button>
@@ -159,9 +166,6 @@ function ModelPage() {
                   yAxisLabel="Percentage"
                 />
               </div>
-              <Button fullWidth mt="md">
-                Compare with another model
-              </Button>
             </Card>
           </Grid.Col>
 
@@ -193,6 +197,7 @@ function ModelPage() {
         </Grid>
       </Card>
     </Container>
+    </>
   );
 }
 

@@ -2,6 +2,7 @@ import { Center, Container, Flex, Select, Text } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { ScatterChart, ScatterChartSeries } from "@mantine/charts";
 import { Button } from "@mantine/core";
+import Header from "../ui/Header";
 
 const AggregatePage: React.FC = () => {
     
@@ -167,6 +168,9 @@ const AggregatePage: React.FC = () => {
 
     return (
         <Container py="md" h="100%">
+            <Header onMenuClick={function (): void {
+                location.href = '/'
+            } }/>
             <Center h="100%">
                 <Flex direction="row" gap="xl" align="center" justify="center">
                     <Flex direction="column" gap="md">
@@ -196,7 +200,7 @@ const AggregatePage: React.FC = () => {
                                 searchable
                                 onChange={(value, option) => { setEndDate(value ? parseInt(value) : 0); }}
                                 />
-                            <Button onClick={generateGraph}>Generate</Button>
+                            <Button onClick={generateGraph}>Go</Button>
                         </Flex>
                         <ScatterChart
                                 w="full"
@@ -210,8 +214,6 @@ const AggregatePage: React.FC = () => {
                         />
                     </Flex>
                     <Flex direction="column" gap="md">
-                        <Text>Hello, more data!</Text>
-                        <Text>More data!</Text>
                     </Flex>
                 </Flex>
             </Center>

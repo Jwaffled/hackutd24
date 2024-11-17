@@ -14,7 +14,7 @@ const Header = ({ onMenuClick }: HeaderProps) => {
         className="flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-blue-600/80 transition-all duration-300 transform hover:scale-105 z-50"
       >
         <IconMenu2 className="text-white" size={20} />
-        <span className="ml-2 text-sm font-bold text-white">Menu</span>
+        <span className="ml-2 text-sm font-bold text-white">Home</span>
       </button>
       
       {/* Rest of your header content */}

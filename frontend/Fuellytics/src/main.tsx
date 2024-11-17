@@ -32,10 +32,6 @@ const router = createBrowserRouter([
     path: "/aggregates",
     element: <AggregatePage/>
   },
-  {
-    path: "/aboutus",
-    element: <AboutUs/>
-  }
 ]) 
 
 
