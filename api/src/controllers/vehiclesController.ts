@@ -32,6 +32,62 @@ interface IAggregateWhereQuery {
 }
 
 const vehiclesController = {
+    async getEntriesByName(request, reply) {
+        const year = parseInt(request.query['year']);
+        const make = request.query['make'];
+        const model = request.query['model'];
+        if (isNaN(year) || typeof make !== 'string' || typeof model !== 'string') {
+            reply.code(400).send({ error: 'Missing or malformed query parameters' });
+            return;
+        }
+        const vehicleInfo = await prisma.vehicle.findFirst({
+            select: {
+                year: true,
+                make: true,
+                model: true,
+                cylinders: true,
+                engine_displacement: true,
+                avg_city_mpg: true,
+                avg_hwy_mpg: true,
+                avg_comb_mpg: true,
+                vehicle_id: true,
+            },
+            where: {
+                year: year,
+                make: make,
+                model: model,
+            }
+        });
+
+        const req = await fetch(`https://www.fueleconomy.gov/ws/rest/ympg/shared/ympgDriverVehicle/${vehicleInfo.vehicle_id}`, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        let points = (await req.json())?.yourMpgDriverVehicle ?? [];
+        if (!Array.isArray(points)) {
+            points = [points];
+        }
+
+        const data: IEntriesResponse = {
+            year: vehicleInfo.year,
+            make: vehicleInfo.make,
+            model: vehicleInfo.model,
+            cylinders: vehicleInfo.cylinders,
+            displacement: vehicleInfo.engine_displacement?.toNumber(),
+            recordsReturned: points.length,
+            data: points,
+            fallbackStats: points.length == 0 ? undefined : {
+                avgCityMpg: vehicleInfo.avg_city_mpg.toNumber(),
+                avgHwyMpg: vehicleInfo.avg_hwy_mpg.toNumber(),
+                avgCombMpg: vehicleInfo.avg_comb_mpg.toNumber()
+            }
+        }
+
+        reply.code(200).send(data);
+    },
+
     async getEntriesById(request, reply) {
         const vehicleId = parseInt(request.query['vehicleId']);
         if (isNaN(vehicleId)) {

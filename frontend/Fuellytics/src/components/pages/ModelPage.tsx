@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ScatterChart } from '@mantine/charts';
 import { Paper, Container, Select, Space, Text, Button } from '@mantine/core';
-import { fetchEntries, fetchMakes, fetchModels, fetchYears, IEntriesResponse } from '../../utils';
+import { fetchEntries, fetchEntriesByYear, fetchMakes, fetchModels, fetchYears, IEntriesResponse } from '../../utils';
 
 // Data for the scatter plot
 interface GraphData {
@@ -30,15 +30,13 @@ function ModelPage() {
   const [makeData, setMakeData] = useState<Array<{ value: string, label: string }> | null>(null);
   const [makeValue, setMakeValue] = useState<string | null>('');
   const [modelData, setModelData] = useState<Array<{ value: string, label: string }> | null>(null);
-  const [modelValue, setModelValue] = useState<{vehicle_id: string, model: string} | null>(null);
+  const [modelValue, setModelValue] = useState<string | null>('');
   const [graphData, setGraphData] = useState<Array<GraphData>| null>(null);
-  
-  const [isModelDisabled, setModelDisabled] = useState(true);
   
 
   useEffect(() => {
     const fetchData = async () => {
-      const yearData = await fetchYears(makeValue, modelValue?.model);
+      const yearData = await fetchYears(makeValue, modelValue);
       setYearData(yearData);
     }
     fetchData();
@@ -53,11 +51,10 @@ function ModelPage() {
   }, [yearValue]);
 
   const generateGraph = async () => {
-    const vehicleId = parseInt(modelValue?.vehicle_id ?? "");
-    if (isNaN(vehicleId)) {
+    if (!yearValue || !makeValue || !modelValue) {
       return;
     }
-    const entryData = await fetchEntries(vehicleId);
+    const entryData = await fetchEntriesByYear(yearValue, makeValue, modelValue);
     const total = entryData.data?.length;
     const average = entryData.data?.reduce((accumulator, entry) => accumulator + parseFloat(entry.mpg.toString()), 0) / total;
     const stdDev = Math.sqrt(entryData.data?.map(x => Math.pow(parseFloat(x.mpg.toString()) - average, 2)).reduce((a, b) => a + b, 0) / total);
@@ -114,7 +111,7 @@ function ModelPage() {
         <Select
           searchable
           label="Model"
-          onChange={(value, options) => setModelValue({model: options?.label, vehicle_id: options?.value})}
+          onChange={(value, options) => setModelValue(options.value)}
           data={modelData ?? []}
           placeholder="Select make"
           style={{ width: '150px' }}

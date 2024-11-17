@@ -47,9 +47,10 @@ export async function fetchMakes(year?: string | null): Promise<Array<IDropdownV
 export async function fetchModels(make: string, year?: string | null): Promise<Array<IDropdownValue>> {
     const res = await fetch(`http://localhost:3000/dropdowns/model?make=${encodeURIComponent(make)}&year=${encodeURIComponent(year ?? "")}`);
     const result = await res.json();
+    console.log(result);
     result.sort();
-    const formatted = result.map((object: {model: string, vehicle_id: number}) => {
-        return { value: object.vehicle_id.toString(), label: object.model };
+    const formatted = result.map((object: {model: string, display: string}) => {
+        return { value: object.model, label: object.display };
     });
     return formatted;
 }
@@ -58,5 +59,11 @@ export async function fetchEntries(vehicleId: number): Promise<IEntriesResponse>
     const res = await fetch(`http://localhost:3000/vehicles/entries?vehicleId=${vehicleId}`);
     const result = await res.json();
     console.log(result);
+    return result;
+}
+
+export async function fetchEntriesByYear(year: string, make: string, model: string): Promise<IEntriesResponse> {
+    const res = await fetch(`http://localhost:3000/vehicles/entries/GetByName?year=${encodeURIComponent(year)}&make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}`);
+    const result = await res.json();
     return result;
 }
