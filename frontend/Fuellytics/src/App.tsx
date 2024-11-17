@@ -1,15 +1,14 @@
+// App.tsx
 import { MantineProvider } from '@mantine/core';
-import React from 'react';
 import HomePage from './components/pages/HomePage';
+import '@mantine/core/styles.css';
 
-const App: React.FC = () => {
+function App() {
   return (
-    <div id="root">
-      <MantineProvider>
-        <HomePage/>
-      </MantineProvider>
-    </div>
+    <MantineProvider defaultColorScheme="dark">
+      <HomePage />
+    </MantineProvider>
   );
-};
+}
 
 export default App;
