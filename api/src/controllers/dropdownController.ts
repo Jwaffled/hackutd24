@@ -34,7 +34,7 @@ const dropdownController = {
                 distinct: ['model']
             })
         }
-        const models = res.map(obj => { return { vehicle_id: obj.vehicle_id, model: obj.model } });
+        const models = res.map((obj: {model: string}) => obj.model);
         reply.code(200).send(models)
         return
     }, 

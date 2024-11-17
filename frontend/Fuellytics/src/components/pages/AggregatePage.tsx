@@ -137,7 +137,11 @@ const AggregatePage: React.FC = () => {
     }
 
     const getGreatest = (arr: any, property: string) => {
-        let greatest = Number.MIN_VALUE
+        if(arr.length === 0) {
+            return 1
+        }
+        
+        let greatest = arr[0][property]
         arr.forEach((obj: any) => {
             if(obj[property] > greatest) {
                 greatest = obj[property]
@@ -147,7 +151,10 @@ const AggregatePage: React.FC = () => {
     }
 
     const getLowest = (arr: any, property: string) => {
-        let lowest = Number.MAX_VALUE
+        if(arr.length === 0) {
+            return 0
+        }
+        let lowest = arr[0][property]
         arr.forEach((obj: any) => {
             if(obj[property] < lowest) {
                 lowest = obj[property]
