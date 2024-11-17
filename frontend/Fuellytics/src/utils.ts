@@ -1,9 +1,9 @@
-interface IDropdownValue {
+export interface IDropdownValue {
     label: string,
     value: string
 }
 
-interface IEntriesResponse {
+export interface IEntriesResponse {
     year: number,
     make: string,
     model: string,
@@ -48,14 +48,15 @@ export async function fetchModels(make: string, year?: string | null): Promise<A
     const res = await fetch(`http://localhost:3000/dropdowns/model?make=${encodeURIComponent(make)}&year=${encodeURIComponent(year ?? "")}`);
     const result = await res.json();
     result.sort();
-    const formatted = result.map((model: string) => {
-        return { value: model, label: model };
+    const formatted = result.map((object: {model: string, vehicle_id: number}) => {
+        return { value: object.vehicle_id.toString(), label: object.model };
     });
     return formatted;
 }
 
 export async function fetchEntries(vehicleId: number): Promise<IEntriesResponse> {
     const res = await fetch(`http://localhost:3000/vehicles/entries?vehicleId=${vehicleId}`);
-    const result: IEntriesResponse = await res.json();
+    const result = await res.json();
+    console.log(result);
     return result;
 }

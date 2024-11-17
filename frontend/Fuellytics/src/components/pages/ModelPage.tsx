@@ -1,41 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { ScatterChart } from '@mantine/charts';
 import { Paper, Container, Select, Space, Text, Button } from '@mantine/core';
-import { fetchMakes, fetchModels, fetchYears } from '../../utils';
+import { fetchEntries, fetchMakes, fetchModels, fetchYears, IEntriesResponse } from '../../utils';
 
 // Data for the scatter plot
-const data = [
-  {
-    color: 'blue.5',
-    name: 'Group 1',
-    data: [
-      { MPG: 25, BMI: 20 },
-      { MPG: 30, BMI: 22 },
-      { MPG: 35, BMI: 18 },
-      { MPG: 40, BMI: 25 },
-      { MPG: 45, BMI: 30 },
-      { MPG: 28, BMI: 15 },
-      { MPG: 22, BMI: 12 },
-      { MPG: 50, BMI: 28 },
-      { MPG: 32, BMI: 19 },
-      { MPG: 48, BMI: 31 },
-      { MPG: 26, BMI: 24 },
-    ],
-  },
-];
+interface GraphData {
+    name: string,
+    color: string,
+    data: Array<{
+      mpg: number,
+      cylinders: number,
+      displacement: number,
+      probability: number,
+      year: number,
+    }>
+}
+
+function calculateProbabilityDensity (x: number, mean: number, stdDev: number) {
+  // Calculate the normal distribution PDF at point x
+  const exponent = Math.pow(x - mean, 2) / (2 * Math.pow(stdDev, 2));
+  const coefficient = 1 / (stdDev * Math.sqrt(2 * Math.PI));
+  return coefficient * Math.exp(-exponent);
+}
 
 
 function ModelPage() {
   const [yearData, setYearData] = useState<Array<{ value: string, label: string }> | null>(null);
-  const [yearValue, setYearValue] = useState<string | null>(null);
+  const [yearValue, setYearValue] = useState<string | null>('');
   const [makeData, setMakeData] = useState<Array<{ value: string, label: string }> | null>(null);
-  const [makeValue, setMakeValue] = useState<string | null>(null);
+  const [makeValue, setMakeValue] = useState<string | null>('');
   const [modelData, setModelData] = useState<Array<{ value: string, label: string }> | null>(null);
-  const [modelValue, setModelValue] = useState<string | null>(null);
+  const [modelValue, setModelValue] = useState<{vehicle_id: string, model: string} | null>(null);
+  const [graphData, setGraphData] = useState<Array<GraphData>| null>(null);
+  
+  const [isModelDisabled, setModelDisabled] = useState(true);
+  
 
   useEffect(() => {
     const fetchData = async () => {
-      const yearData = await fetchYears(makeValue, modelValue);
+      const yearData = await fetchYears(makeValue, modelValue?.model);
       setYearData(yearData);
     }
     fetchData();
@@ -49,6 +52,36 @@ function ModelPage() {
     fetchData();
   }, [yearValue]);
 
+  const generateGraph = async () => {
+    const vehicleId = parseInt(modelValue?.vehicle_id ?? "");
+    if (isNaN(vehicleId)) {
+      return;
+    }
+    const entryData = await fetchEntries(vehicleId);
+    const total = entryData.data?.length;
+    const average = entryData.data?.reduce((accumulator, entry) => accumulator + parseFloat(entry.mpg.toString()), 0) / total;
+    const stdDev = Math.sqrt(entryData.data?.map(x => Math.pow(parseFloat(x.mpg.toString()) - average, 2)).reduce((a, b) => a + b, 0) / total);
+    const formatted = entryData.data?.map((entry, index) => {
+      const pdf = calculateProbabilityDensity(entry.mpg, average, stdDev);
+      const probability = pdf * 100;
+      return { 
+        mpg: entry.mpg,
+        cylinders: entryData.cylinders,
+        displacement: entryData.displacement,
+        probability: probability,
+        year: entryData.year,
+      };
+    });
+    
+    const graphData: GraphData = {
+      name: "Group 1",
+      color: "blue.5",
+      data: formatted
+    }
+
+    setGraphData([graphData]);
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       if (makeValue) {
@@ -61,9 +94,9 @@ function ModelPage() {
 
   return (
     <Container size="lg" py="xl">
-      {/* Dropdowns for Year, Brand, and Make */}
       <div style={{ display: 'flex', gap: '20px', marginBottom: '40px' }}>
         <Select
+          searchable
           label="Year"
           onChange={setYearValue}
           data={yearData ?? []}
@@ -71,6 +104,7 @@ function ModelPage() {
           style={{ width: '150px' }}
         />
         <Select
+          searchable
           label="Make"
           onChange={setMakeValue}
           data={makeData ?? []}
@@ -78,12 +112,16 @@ function ModelPage() {
           style={{ width: '150px' }}
         />
         <Select
+          searchable
           label="Model"
-          onChange={setModelValue}
+          onChange={(value, options) => setModelValue({model: options?.label, vehicle_id: options?.value})}
           data={modelData ?? []}
           placeholder="Select make"
           style={{ width: '150px' }}
         />
+        <Button onClick={generateGraph}>
+          Generate Graph
+        </Button>
       </div>
 
       {/* Layout for the chart and text */}
@@ -92,10 +130,10 @@ function ModelPage() {
         <div style={{ flex: 1 }}>
           <ScatterChart
             h={250}  // Smaller height for the graph
-            data={data}
-            dataKey={{ x: 'MPG', y: 'BMI' }}
+            data={graphData ?? [{name: "", data: [], color: ""}]}
+            dataKey={{ y: 'probability', x: 'mpg' }}
             xAxisLabel="MPG"
-            yAxisLabel="Population Percentage"
+            yAxisLabel="Percentage"
           />
           {/* "Compare with" Button */}
           <Button style={{ marginTop: '20px' }} fullWidth>
