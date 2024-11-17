@@ -1,39 +1,36 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Comparisons from './Comparisons.tsx'
-import ScatterChartDemo from './ScatterChartDemo.tsx'
+import ModelPage from './components/pages/ModelPage.tsx'
 import { MantineProvider } from '@mantine/core'
 import '@mantine/charts/styles.css'
 import '@mantine/core/styles.css'
+import HomePage from './components/pages/HomePage.tsx'
+import AggregatePage from './components/pages/AggregatePage.tsx'
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>,
+    element: <HomePage/>,
   },
   {
     path: "/comparisons",
     element: <Comparisons/>,
   },
   {
-    path: "/aggregations",
-    element: <Comparisons/>,
-  },
-  {
     path: "/models",
-    element: <Comparisons/>,
+    element: <ModelPage/>,
   },
   {
     path: "/examples",
     element: <Comparisons/>,
   },
   {
-  path: "/ScatterChartDemo",
-  element: <ScatterChartDemo/>,
+    path: "/aggregates",
+    element: <AggregatePage/>
   }
 ]) 
 
@@ -41,8 +38,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MantineProvider>
-      <RouterProvider router={router} />    
-      {/* <ScatterChartDemo/> */}
+      <RouterProvider router={router} />
     </MantineProvider>
   </StrictMode>,
 )
