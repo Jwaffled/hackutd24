@@ -25,6 +25,10 @@ const router = createBrowserRouter([
     element: <ModelPage/>,
   },
   {
+    path: "/examples",
+    element: <Comparisons/>,
+  },
+  {
     path: "/aggregates",
     element: <AggregatePage/>
   }
