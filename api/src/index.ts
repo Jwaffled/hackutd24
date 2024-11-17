@@ -13,7 +13,6 @@ fastify.register(vehicleRoutes, {prefix: '/vehicle'})
 // });
 
 const start = async () => {
-    parseScrapedData();
     try {
       await fastify.listen({ port: PORT })
     } catch (err) {
