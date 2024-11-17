@@ -4,6 +4,11 @@ import './index.css'
 import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Comparisons from './Comparisons.tsx'
+import ScatterChartDemo from './ScatterChartDemo.tsx'
+import { MantineProvider } from '@mantine/core'
+import '@mantine/charts/styles.css'
+import '@mantine/core/styles.css'
+
 
 const router = createBrowserRouter([
   {
@@ -13,12 +18,19 @@ const router = createBrowserRouter([
   {
     path: "/comparisons",
     element: <Comparisons/>,
+  },
+  {
+  path: "/ScatterChartDemo",
+  element: <ScatterChartDemo/>,
   }
 ]) 
 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <MantineProvider>
+      <RouterProvider router={router} />    
+      {/* <ScatterChartDemo/> */}
+    </MantineProvider>
   </StrictMode>,
 )
