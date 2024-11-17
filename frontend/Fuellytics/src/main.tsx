@@ -9,7 +9,7 @@ import '@mantine/charts/styles.css'
 import '@mantine/core/styles.css'
 import HomePage from './components/pages/HomePage.tsx'
 import AggregatePage from './components/pages/AggregatePage.tsx'
-
+import AboutUs from './components/pages/AboutUs.tsx'
 
 const router = createBrowserRouter([
   {
@@ -31,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: "/aggregates",
     element: <AggregatePage/>
+  },
+  {
+    path: "/aboutus",
+    element: <AboutUs/>
   }
 ]) 
 
