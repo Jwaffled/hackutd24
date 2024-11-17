@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScatterChart } from '@mantine/charts';
 import { Paper, Container, Select, Space, Text, Button } from '@mantine/core';
+import { fetchMakes, fetchModels, fetchYears } from '../../utils';
 
 // Data for the scatter plot
 const data = [
@@ -23,26 +24,63 @@ const data = [
   },
 ];
 
-function ScatterChartDemo() {
+
+function ModelPage() {
+  const [yearData, setYearData] = useState<Array<{ value: string, label: string }> | null>(null);
+  const [yearValue, setYearValue] = useState<string | null>(null);
+  const [makeData, setMakeData] = useState<Array<{ value: string, label: string }> | null>(null);
+  const [makeValue, setMakeValue] = useState<string | null>(null);
+  const [modelData, setModelData] = useState<Array<{ value: string, label: string }> | null>(null);
+  const [modelValue, setModelValue] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const yearData = await fetchYears(makeValue, modelValue);
+      setYearData(yearData);
+    }
+    fetchData();
+  }, [makeValue, modelValue]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const makeData = await fetchMakes(yearValue);
+      setMakeData(makeData);
+    }
+    fetchData();
+  }, [yearValue]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (makeValue) {
+        const modelData = await fetchModels(makeValue, yearValue);
+        setModelData(modelData);
+      }
+    }
+    fetchData();
+  }, [makeValue, yearValue]);
+
   return (
     <Container size="lg" py="xl">
       {/* Dropdowns for Year, Brand, and Make */}
       <div style={{ display: 'flex', gap: '20px', marginBottom: '40px' }}>
         <Select
           label="Year"
-          data={['2020', '2021', '2022', '2023']}
+          onChange={setYearValue}
+          data={yearData ?? []}
           placeholder="Select year"
           style={{ width: '150px' }}
         />
         <Select
-          label="Brand"
-          data={['Brand A', 'Brand B', 'Brand C']}
+          label="Make"
+          onChange={setMakeValue}
+          data={makeData ?? []}
           placeholder="Select brand"
           style={{ width: '150px' }}
         />
         <Select
-          label="Make"
-          data={['Make 1', 'Make 2', 'Make 3']}
+          label="Model"
+          onChange={setModelValue}
+          data={modelData ?? []}
           placeholder="Select make"
           style={{ width: '150px' }}
         />
@@ -80,4 +118,4 @@ function ScatterChartDemo() {
   );
 }
 
-export default ScatterChartDemo;
+export default ModelPage;
