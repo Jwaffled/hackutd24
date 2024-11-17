@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import * as fs from 'fs';
 import path from 'path';
 import sax from 'sax';
@@ -138,6 +139,8 @@ export function parseScrapedData() {
     const filePath = path.resolve(__dirname, '../../data/vehicles.xml');
     const stream = fs.createReadStream(filePath, { encoding: 'utf-8' });
     const streamParser = sax.createStream(true);
+
+    const uniqueTags = new Set();
     
     let currentTag: string = null;
     let currentVehicle: Partial<RawVehicleData> = null;
@@ -147,6 +150,7 @@ export function parseScrapedData() {
     streamParser.on('opentag', (node) => {
         if (node.name !== 'vehicles' && node.name !== 'vehicle') {
             tagStack.push(node.name);
+            uniqueTags.add(node.name);
         }
         if (node.name === 'vehicle') {
             currentVehicle = {};
@@ -185,7 +189,18 @@ export function parseScrapedData() {
 
     streamParser.on('end', () => {
         console.log("Finished with data");
+        console.log(uniqueTags);
     });
 
     stream.pipe(streamParser);
+}
+
+async function uploadToDatabase(data: Array<RawVehicleData>) {
+    const modifiedData: Array<Prisma.VehicleCreateInput> = [];
+    for (let item of data) {
+        let obj: Partial<Prisma.VehicleCreateInput> = {};
+        
+    }
+
+    
 }
