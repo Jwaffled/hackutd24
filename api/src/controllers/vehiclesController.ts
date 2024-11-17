@@ -22,6 +22,15 @@ interface IEntriesResponse {
     }
 }
 
+interface IAggregateWhereQuery {
+    make: string,
+    year?: {
+        gte?: number,
+        lte?: number
+    },
+    model?: string
+}
+
 const vehiclesController = {
     async getEntriesById(request, reply) {
         const vehicleId = parseInt(request.query['vehicleId']);
@@ -70,6 +79,90 @@ const vehiclesController = {
         }
 
         reply.code(200).send(data);
+    },
+
+    async aggregate(request, reply) {
+        const make = request.query.make;
+
+        if(!make) {
+            reply.code(400).send({error: "Missing query parameter make"})
+            return
+        }
+
+        const startYear = parseInt(request.query.startYear)
+        const endYear = parseInt(request.query.endYear)
+
+        if(!isNaN(startYear) && !isNaN(endYear) && endYear < startYear) {
+            reply.code(400).send({error: "Illegal: Query parameter endYear is less than startYear"})
+            return
+        }
+
+        const model = request.query.model
+
+        let res : any;
+
+        if(!isNaN(startYear) && !isNaN(endYear)) {
+            const whereQuery: IAggregateWhereQuery = {
+                make: make,
+                year: {
+                    gte: startYear,
+                    lte: endYear
+                }
+            }
+
+            if(model) {
+                whereQuery.model = model
+            }
+
+            res = await prisma.vehicle.findMany({
+                where: whereQuery
+            })
+        } else if(!isNaN(startYear)) {
+            const whereQuery: IAggregateWhereQuery = {
+                make: make,
+                year: {
+                    gte: startYear
+                }
+            }
+
+            if(model) {
+                whereQuery.model = model
+            }
+
+            res = await prisma.vehicle.findMany({
+                where: whereQuery
+            })
+
+        } else if(!isNaN(endYear)) {
+            const whereQuery: IAggregateWhereQuery = {
+                make: make,
+                year: {
+                    lte: endYear
+                }
+            }
+
+            if(model) {
+                whereQuery.model = model
+            }
+
+            res = await prisma.vehicle.findMany({
+                where: whereQuery
+            })
+        } else {
+            const whereQuery: IAggregateWhereQuery = {
+                make: make
+            }
+
+            if(model) {
+                whereQuery.model = model
+            }
+            res = await prisma.vehicle.findMany({
+                where: whereQuery
+            })
+        }
+
+        reply.code(200).send(res);
+
     }
 }
 
