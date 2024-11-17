@@ -104,16 +104,16 @@ const HomePage = () => {
     <div className="p-6">
       <div className="grid grid-cols-2 gap-4">
         <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
-          Aggregations
+          <a href="/aggregations">Aggregations</a>
         </button>
         <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
-          Examples
+          <a href="/examples">Examples</a>
         </button>
         <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
-          Models
+          <a href="/models">Models</a>
         </button>
         <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
-          Comparisons
+          <a href="/comparisons">Comparisons</a>
         </button>
       </div>
     </div>

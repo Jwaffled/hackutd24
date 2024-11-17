@@ -20,6 +20,18 @@ const router = createBrowserRouter([
     element: <Comparisons/>,
   },
   {
+    path: "/aggregations",
+    element: <Comparisons/>,
+  },
+  {
+    path: "/models",
+    element: <Comparisons/>,
+  },
+  {
+    path: "/examples",
+    element: <Comparisons/>,
+  },
+  {
   path: "/ScatterChartDemo",
   element: <ScatterChartDemo/>,
   }
