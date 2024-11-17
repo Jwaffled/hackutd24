@@ -41,7 +41,7 @@ const CarComparison = () => {
                   setBrand(e.target.value as keyof typeof models);
                   setModel("");
                 }}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-black"
               >
                 <option value="">Select a Brand</option>
                 {brands.map((b) => (
@@ -60,7 +60,7 @@ const CarComparison = () => {
                 id="year"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-black"
               >
                 <option value="">Select a Year</option>
                 {years.map((y) => (
@@ -80,7 +80,7 @@ const CarComparison = () => {
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
                 disabled={!brand}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100 text-black"
               >
                 <option value="">Select a Model</option>
                 {brand &&
