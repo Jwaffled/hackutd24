@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ScatterChart } from '@mantine/charts';
 import { Button, Card, Container, Grid, Paper, Select } from '@mantine/core';
 import { fetchYears, fetchMakes, fetchEntriesByYear, fetchModels, IEntriesResponse } from '../../utils';
+import Header from '../ui/Header';
 
 type DataItem = {
   value: string;
@@ -257,9 +258,13 @@ function ComparisonPage() {
   );
 
   return (
+    
     <Container className="py-8 max-w-7xl">
+      <Header onMenuClick={function (): void {
+                location.href = '/'
+            } }/>
       <Card className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Vehicle Comparison</h1>
+        <h1 className="text-2xl font-bold mb-6"><br />Vehicle Comparison</h1>
 
         {/* Filters Section */}
         <Grid className="mb-8">
