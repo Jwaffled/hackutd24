@@ -29,10 +29,8 @@ model Vehicle {
   drive_type String
   is_supercharged Boolean
   is_turbocharged Boolean
+  is_gas Boolean
   is_electric Boolean
   is_hybrid Boolean
   is_hydrogen Boolean
-  avg_city_mpge Decimal?
-  avg_hwy_mpge Decimal?
-  avg_comb_mpge Decimal?
 }

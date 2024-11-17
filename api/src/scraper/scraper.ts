@@ -2,10 +2,12 @@ import { Prisma } from '@prisma/client';
 import * as fs from 'fs';
 import path from 'path';
 import sax from 'sax';
+import prisma from '../prisma';
 
 // https://www.fueleconomy.gov/feg/ws/index.shtml
 interface RawVehicleData {
     id: number,
+    battery: string,
     atvType: string,
     barrels08: number,
     barrelsA08: number,
@@ -141,6 +143,7 @@ export function parseScrapedData() {
     const streamParser = sax.createStream(true);
 
     const uniqueTags = new Set();
+    const fuelTypeValues = new Set();
     
     let currentTag: string = null;
     let currentVehicle: Partial<RawVehicleData> = null;
@@ -161,6 +164,9 @@ export function parseScrapedData() {
 
     streamParser.on('text', (text) => {
         if (currentTag && currentVehicle) {
+            if (currentTag.endsWith('cylinders')) {
+                fuelTypeValues.add(text);
+            }
             const keys = currentTag.split('.');
             let target = currentVehicle;
             for (let i = 0; i < keys.length - 1; i++) {
@@ -168,8 +174,12 @@ export function parseScrapedData() {
                 target[key] = target[key] || {};
                 target = target[key];
             }
-
-            target[keys[keys.length - 1]] = text.trim();
+            if (!isNaN(parseFloat(text.trim()))) {
+                target[keys[keys.length - 1]] = parseFloat(text.trim());
+            } else {
+                target[keys[keys.length - 1]] = text.trim();
+            }
+            
         }
     });
 
@@ -178,6 +188,8 @@ export function parseScrapedData() {
             tagStack.pop();
         }
         if (tagName === 'vehicle' && currentVehicle) {
+            // if (test) console.log("VEHICLE: " + JSON.stringify(currentVehicle));
+            // test = false;
             vehicleData.push(currentVehicle as RawVehicleData);
             currentVehicle = null;
         }
@@ -187,20 +199,46 @@ export function parseScrapedData() {
         }
     });
 
-    streamParser.on('end', () => {
+    streamParser.on('end', async () => {
         console.log("Finished with data");
-        console.log(uniqueTags);
+        // console.log(vehicleData);
+        console.log(fuelTypeValues);
+        await uploadToDatabase(vehicleData);
     });
 
     stream.pipe(streamParser);
 }
 
 async function uploadToDatabase(data: Array<RawVehicleData>) {
-    const modifiedData: Array<Prisma.VehicleCreateInput> = [];
+    const modifiedData: Array<Prisma.VehicleCreateManyInput> = [];
     for (let item of data) {
-        let obj: Partial<Prisma.VehicleCreateInput> = {};
-        
+        let isGas = (item.fuelType1.includes("Gasoline") || item.fuelType1.includes("Diesel")) && !item.fuelType2;
+        let isHydrogen = item.fuelType === "Hydrogen";
+        let isElectric = item.fuelType === "Electricity";
+        let isHybrid = !isGas && !isElectric && !isHydrogen;
+        let obj: Prisma.VehicleCreateInput = {
+            vehicle_id: item.id,
+            make: item.make?.toString() ?? "",
+            model: item.model?.toString() ?? "",
+            year: item.year,
+            avg_city_mpg: item.city08U || item.city08,
+            avg_hwy_mpg: item.highway08U || item.highway08,
+            avg_comb_mpg: item.comb08U || item.comb08,
+            engine_displacement: item.displ?.toString() === "NA" ? 0 : item.displ,
+            cylinders: item.cylinders?.toString() === "NA" ? 0 : item.cylinders,
+            drive_type: item.drive?.toString() ?? "",
+            is_gas: isGas,
+            is_hydrogen: isHydrogen,
+            is_electric: isElectric,
+            is_hybrid: isHybrid,
+            is_turbocharged: item.tCharger === 'T',
+            is_supercharged: item.sCharger === 'S'
+        };
+        modifiedData.push(obj);
     }
 
+    await prisma.vehicle.createMany({
+        data: modifiedData
+    });
     
 }
