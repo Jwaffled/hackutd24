@@ -9,12 +9,13 @@ const dropdownController = {
         }
 
         const year = parseInt(request.query.year)
-        let res : {model: string}[];
+        let res : {model: string, vehicle_id: number}[];
 
         if(!isNaN(year)) {
             res = await prisma.vehicle.findMany({
                 select: {
-                    model: true
+                    model: true,
+                    vehicle_id: true
                 },
                 where: {
                     make: make,
@@ -24,7 +25,8 @@ const dropdownController = {
         } else {
             res = await prisma.vehicle.findMany({
                 select: {
-                    model: true
+                    model: true,
+                    vehicle_id: true
                 },
                 where: {
                     make: make
@@ -32,8 +34,7 @@ const dropdownController = {
                 distinct: ['model']
             })
         }
-
-        const models = res.map((obj: {model : string}) => obj.model)
+        const models = res.map(obj => { return { vehicle_id: obj.vehicle_id, model: obj.model } });
         reply.code(200).send(models)
         return
     }, 

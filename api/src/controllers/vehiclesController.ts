@@ -45,8 +45,10 @@ const vehiclesController = {
             }
         });
 
-        const points: Array<any> = (await req.json())?.yourMpgDriverVehicle ?? [];
-
+        let points = (await req.json())?.yourMpgDriverVehicle ?? [];
+        if (!Array.isArray(points)) {
+            points = [points];
+        }
         const vehicleInfo = await prisma.vehicle.findFirst({
             select: {
                 year: true,
@@ -68,7 +70,7 @@ const vehiclesController = {
             make: vehicleInfo.make,
             model: vehicleInfo.model,
             cylinders: vehicleInfo.cylinders,
-            displacement: vehicleInfo.engine_displacement.toNumber(),
+            displacement: vehicleInfo.engine_displacement?.toNumber(),
             recordsReturned: points.length,
             data: points,
             fallbackStats: points.length == 0 ? undefined : {
