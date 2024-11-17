@@ -12,3 +12,25 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Vehicle {
+  id Int @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  vehicle_id Int
+  make String
+  model String
+  year Int
+  avg_city_mpg Decimal?
+  avg_hwy_mpg Decimal?
+  avg_comb_mpg Decimal?
+  engine_displacement Decimal?
+  cylinders Int?
+  drive_type String
+  is_supercharged Boolean
+  is_turbocharged Boolean
+  is_gas Boolean
+  is_electric Boolean
+  is_hybrid Boolean
+  is_hydrogen Boolean
+}

@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import vehicleRoutes from './routes/vehicleRoutes.js'
+import { parseScrapedData } from './scraper/scraper.js';
 
 const fastify = Fastify({ logger: true });
 
