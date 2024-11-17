@@ -1,9 +1,8 @@
-import fastify from "fastify";
-import vehicleController from '../controllers/vehicleController.js'
+import fastify, { FastifyInstance } from "fastify";
+import vehiclesController from '../controllers/vehiclesController.js'
 
-async function routes (fastify, options) {
-    fastify.get('/', vehicleController.getAllVehicles)
-    fastify.get('/:id', vehicleController.getVehicleById)
+async function routes (fastify: FastifyInstance, options) {
+    fastify.get('/entries', vehiclesController.getEntriesById);
 }
 
 export default routes

@@ -7,8 +7,8 @@ const fastify = Fastify({ logger: true });
 
 const PORT = 3000;
 
-fastify.register(vehicleRoutes, {prefix: '/vehicle'})
 fastify.register(dropdownRoutes, {prefix: '/dropdowns'})
+fastify.register(vehicleRoutes, {prefix: '/vehicles'})
 
 // fastify.get('/', (request, reply) => {
 //   reply.send({ hello: 'world' });
