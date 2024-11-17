@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { IconMenu2, IconHome, IconHelpCircle, IconChevronDown, IconX } from '@tabler/icons-react';
+import React from 'react';
+import { useDisclosure } from '@mantine/hooks';
+import { Drawer } from '@mantine/core';
+import { IconMenu2, IconHome, IconHelpCircle, IconChevronDown } from '@tabler/icons-react';
+import { Drawer } from '@/components/ui/drawer'
 
 const App = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const toggleDropdown = (menu: string) => {
@@ -19,22 +22,21 @@ const App = () => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
-      {/* Sidebar */}
-      <div 
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-900/95 backdrop-blur-sm transform transition-transform duration-300 ease-in-out z-40 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+      {/* Mantine Drawer */}
+      <Drawer
+        opened={opened}
+        onClose={close}
+        title={<h2 className="text-xl font-bold">Menu</h2>}
+        offset={8}
+        radius="md"
+        size="md"
+        classNames={{
+          header: 'border-b border-gray-200 pb-4',
+          drawer: 'bg-gray-900/95 backdrop-blur-sm',
+          title: 'text-white',
+          closeButton: 'text-white hover:text-gray-300 transition-colors'
+        }}
       >
-        <div className="flex justify-between items-center p-4 border-b border-white/10">
-          <h2 className="text-xl font-bold text-white">Menu</h2>
-          <button 
-            onClick={() => setIsSidebarOpen(false)}
-            className="text-white hover:text-gray-300 transition-colors"
-          >
-            <IconX size={24} />
-          </button>
-        </div>
-        
         <nav className="p-4">
           <div className="space-y-2">
             <a href="#" className="block px-4 py-2 text-sm text-white hover:bg-blue-600/80 rounded-md transition-colors">
@@ -68,22 +70,14 @@ const App = () => {
             </div>
           </div>
         </nav>
-      </div>
-
-      {/* Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+      </Drawer>
 
       {/* Visor Header */}
       <header className="fixed top-0 left-0 right-0 z-30 flex justify-between items-center px-5 py-3 bg-gray-900/70 backdrop-blur-sm border-b border-white/10 shadow-lg">
         {/* Menu Button */}
         <button 
           className="flex items-center px-4 py-2 rounded-md bg-white/10 hover:bg-blue-600/80 transition-all duration-300 transform hover:scale-105 z-50"
-          onClick={() => setIsSidebarOpen(true)}
+          onClick={open}
         >
           <IconMenu2 className="text-white" size={20} />
           <span className="ml-2 text-sm font-bold text-white">Menu</span>
