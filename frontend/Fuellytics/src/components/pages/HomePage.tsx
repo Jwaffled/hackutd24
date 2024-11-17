@@ -103,18 +103,24 @@ const HomePage = () => {
   >
     <div className="p-6">
       <div className="grid grid-cols-2 gap-4">
-        <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
-          <a href="/aggregations">Aggregations</a>
-        </button>
-        <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
-          <a href="/examples">Examples</a>
-        </button>
-        <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
-          <a href="/models">Models</a>
-        </button>
-        <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
-          <a href="/comparisons">Comparisons</a>
-        </button>
+        <a href="/aggregates">
+          <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">Aggregates</button>
+        </a>
+        <a href="/examples">
+          <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
+            Examples
+          </button>
+        </a>
+        <a href="/models">
+          <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
+            Models
+          </button>
+        </a>
+        <a href="/comparisons">
+          <button className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 transition-colors">
+            Comparisons
+          </button>
+        </a>
       </div>
     </div>
   </Card>
